@@ -22,6 +22,8 @@ const resolveDbPath = () => {
 export const ENV = {
   PORT: Number(process.env.PORT) || 3001,
   JWT_SECRET: process.env.JWT_SECRET || "family-todo-secret-change-me",
+  PORTAL_JWT_SECRET:
+    process.env.PORTAL_JWT_SECRET || "portal-jwt-secret-change-me",
   DB_PATH: resolveDbPath(),
 };
 

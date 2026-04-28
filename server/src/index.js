@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { ENV, ROOT_DIR } from "./config/env.js";
 import authRoutes from "./routes/auth.js";
+import portalAuthRoutes from "./routes/portal-auth.js";
 import taskRoutes from "./routes/tasks.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -15,10 +16,12 @@ const PORT = ENV.PORT;
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use(portalAuthRoutes);
 
 // Health check
 app.get("/api/health", (_req, res) => {

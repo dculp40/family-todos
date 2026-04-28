@@ -1,11 +1,66 @@
 import { Router } from "express";
+import jwt from "jsonwebtoken";
 import db from "../db/init.js";
 import { authenticate } from "../middleware/auth.js";
+import { ENV } from "../config/env.js";
 
 const router = Router();
 
 // All task routes require authentication
 router.use(authenticate);
+
+function authenticatePortal(req, res) {
+  const header = req.headers.authorization;
+  if (!header || !header.startsWith("Bearer ")) {
+    res
+      .status(401)
+      .json({ data: null, error: "Authentication required", meta: null });
+    return null;
+  }
+
+  try {
+    const token = header.split(" ")[1];
+    const payload = jwt.verify(token, ENV.PORTAL_JWT_SECRET);
+    return payload;
+  } catch {
+    res
+      .status(401)
+      .json({ data: null, error: "Invalid or expired token", meta: null });
+    return null;
+  }
+}
+
+// GET /api/tasks/portal — read-only task feed for the portal
+router.get("/portal", (req, res) => {
+  const portalUser = authenticatePortal(req, res);
+  if (!portalUser) return;
+
+  try {
+    const tasks = db
+      .prepare(
+        `SELECT t.*,
+          opener.display_name AS opener_name,
+          closer.display_name AS closer_name
+        FROM tasks t
+        LEFT JOIN users opener ON t.opened_by = opener.id
+        LEFT JOIN users closer ON t.closed_by = closer.id
+        WHERE t.status = 'open'
+        ORDER BY t.important DESC, t.urgent DESC, t.opened_at DESC
+        LIMIT 8`,
+      )
+      .all();
+
+    return res.json({
+      data: tasks,
+      error: null,
+      meta: { count: tasks.length, user: portalUser.email ?? null },
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ data: null, error: "Failed to fetch portal tasks", meta: null });
+  }
+});
 
 // GET /api/tasks — list tasks with optional ?status=open|closed
 router.get("/", (req, res) => {
@@ -156,13 +211,11 @@ router.patch("/:id", (req, res) => {
 
     if (status !== undefined) {
       if (!["open", "closed"].includes(status)) {
-        return res
-          .status(400)
-          .json({
-            data: null,
-            error: "Status must be 'open' or 'closed'",
-            meta: null,
-          });
+        return res.status(400).json({
+          data: null,
+          error: "Status must be 'open' or 'closed'",
+          meta: null,
+        });
       }
       updates.push("status = ?");
       params.push(status);
