@@ -15,9 +15,7 @@ function serializeForInlineScript(value) {
   return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
-router.post("/portal-login", (req, res) => {
-  const portalToken = req.body?.portalToken;
-
+function handlePortalLogin(res, portalToken) {
   if (!portalToken || typeof portalToken !== "string") {
     return res.status(400).send("Missing portalToken");
   }
@@ -36,7 +34,9 @@ router.post("/portal-login", (req, res) => {
     }
 
     const user = db
-      .prepare("SELECT id, username, display_name FROM users WHERE username = ?")
+      .prepare(
+        "SELECT id, username, display_name FROM users WHERE username = ?",
+      )
       .get(username);
 
     if (!user) {
@@ -72,6 +72,14 @@ router.post("/portal-login", (req, res) => {
   } catch {
     return res.status(401).send("Invalid or expired portal token");
   }
+}
+
+router.post("/portal-login", (req, res) => {
+  return handlePortalLogin(res, req.body?.portalToken);
+});
+
+router.get("/portal-login", (req, res) => {
+  return handlePortalLogin(res, req.query?.portalToken);
 });
 
 export default router;
