@@ -78,8 +78,4 @@ router.post("/portal-login", (req, res) => {
   return handlePortalLogin(res, req.body?.portalToken);
 });
 
-router.get("/portal-login", (req, res) => {
-  return handlePortalLogin(res, req.query?.portalToken);
-});
-
 export default router;
