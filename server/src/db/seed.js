@@ -1,5 +1,5 @@
 import "../config/env.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import db from "./init.js";
 
 const SALT_ROUNDS = 10;

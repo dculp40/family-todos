@@ -1,5 +1,5 @@
 import { Router } from "express";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import db from "../db/init.js";
 import { ENV } from "../config/env.js";
@@ -13,13 +13,11 @@ router.post("/login", async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res
-        .status(400)
-        .json({
-          data: null,
-          error: "Username and password are required",
-          meta: null,
-        });
+      return res.status(400).json({
+        data: null,
+        error: "Username and password are required",
+        meta: null,
+      });
     }
 
     const user = db
@@ -136,13 +134,11 @@ router.post("/portal-login", (req, res) => {
       meta: null,
     });
   } catch {
-    return res
-      .status(401)
-      .json({
-        data: null,
-        error: "Invalid or expired portal token",
-        meta: null,
-      });
+    return res.status(401).json({
+      data: null,
+      error: "Invalid or expired portal token",
+      meta: null,
+    });
   }
 });
 
