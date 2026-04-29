@@ -2,6 +2,7 @@ import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import { AppShell } from "./components/AppShell.jsx";
 import { LoadingScreen } from "./components/LoadingScreen.jsx";
 import { LoginPage } from "./pages/LoginPage.jsx";
+import { PortalLoginPage } from "./pages/PortalLoginPage.jsx";
 import { TaskFormPage } from "./pages/TaskFormPage.jsx";
 import { TaskListPage } from "./pages/TaskListPage.jsx";
 import { useAuth } from "./hooks/useAuth.js";
@@ -31,6 +32,7 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/portal-login" element={<PortalLoginPage />} />
       <Route element={<ProtectedRoutes />}>
         <Route element={<AppShell />}>
           <Route index element={<Navigate to="/tasks" replace />} />

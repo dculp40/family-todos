@@ -1,6 +1,9 @@
 const API_BASE = "/api";
 
-async function request(path, { method = "GET", headers = {}, body, token } = {}) {
+async function request(
+  path,
+  { method = "GET", headers = {}, body, token } = {},
+) {
   const response = await fetch(`${API_BASE}${path}`, {
     method,
     headers: {
@@ -53,7 +56,11 @@ export const api = {
   },
 
   async createTask(data, token) {
-    const result = await request("/tasks", { method: "POST", body: data, token });
+    const result = await request("/tasks", {
+      method: "POST",
+      body: data,
+      token,
+    });
     return result.data;
   },
 
@@ -68,6 +75,14 @@ export const api = {
 
   async deleteTask(id, token) {
     const result = await request(`/tasks/${id}`, { method: "DELETE", token });
+    return result.data;
+  },
+
+  async portalLogin(portalToken) {
+    const result = await request("/auth/portal-login", {
+      method: "POST",
+      body: { portalToken },
+    });
     return result.data;
   },
 };
