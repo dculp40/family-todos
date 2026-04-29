@@ -133,7 +133,8 @@ router.post("/portal-login", (req, res) => {
       error: null,
       meta: null,
     });
-  } catch {
+  } catch (err) {
+    console.error("[portal-login]", err.message);
     return res.status(401).json({
       data: null,
       error: "Invalid or expired portal token",
