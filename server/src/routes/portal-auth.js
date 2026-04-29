@@ -69,7 +69,8 @@ function handlePortalLogin(res, portalToken) {
     </script>
   </body>
 </html>`);
-  } catch {
+  } catch (err) {
+    console.error("[portal-login]", err.message);
     return res.status(401).send("Invalid or expired portal token");
   }
 }
